@@ -4,15 +4,22 @@ import URI from "urijs";
 // /records endpoint
 window.path = "http://localhost:3000/records";
 
-const sampleOptions = { page: 2, colors: ["red", "brown"] }
+const sampleOptions = { page: 2, colors: ["red", "green"] }
 
 // Your retrieve function plus any additional functions go here ...
-function retrieve(options) {
+function retrieve(options = { page: 1, colors: [] }) {
+
   const output = {};
-  const colorString = options.colors ? options.colors.map(element => `color[]=${element}`).join('&'): '';
   const offset = (options.page -1) * 10
-  const url = URI('http://localhost:3000/records')
-  fetch(url)
+  const url = URI({
+    protocol: 'http',
+    hostname: 'localhost',
+    port: '3000',
+    path: 'records',
+  })
+  url.addSearch(options.colors)
+
+  fetch(url.toString())
     .then(response => response.json())
     .then(data => data.slice(offset, offset + 10))
     .then(data => {
@@ -30,10 +37,10 @@ function retrieve(options) {
       output.previousPage = options.page > 1 ? options.page -1 : null;
       output.nextPage = options.page < output.ids.length ? options.page + 1 : null;
     })
-    // .then(() => console.log(output))
+    .then(() => console.log(output))
   return output;
 }
-const colorized = retrieve(sampleOptions);
+const colorized = retrieve();
 console.log(colorized)
 export default retrieve;
 
