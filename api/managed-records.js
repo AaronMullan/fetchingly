@@ -30,7 +30,7 @@ function retrieve(options) {
       output.previousPage = options.page > 1 ? options.page -1 : null;
       output.nextPage = options.page < output.ids.length ? options.page + 1 : null;
     })
-    .then(() => console.log(output))
+    // .then(() => console.log(output))
   return output;
 }
 const colorized = retrieve(sampleOptions);
@@ -60,6 +60,6 @@ function retrieveNoUri(options) {
       output.previousPage = options.page > 1 ? options.page -1 : null;
       output.nextPage = options.page < output.ids.length ? options.page + 1 : null;
     })
-    .then(() => console.log(output))
+    // .then(() => console.log(output))
   return output;
 }
