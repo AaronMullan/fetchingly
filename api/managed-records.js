@@ -4,10 +4,12 @@ import URI from "urijs";
 // /records endpoint
 window.path = "http://localhost:3000/records";
 
-const sampleOptions = { page: 3,  colors: []}
+const sampleOptions = { page: 3 }
 
 // Your retrieve function plus any additional functions go here ...
-function retrieve(options = { page: 1, colors: [] }) {
+function retrieve(options) {
+  if(!options.page) options.page = 1;
+  if(!options.colors) options.colors = [];
   const  primaryEvaluator = (d) => d === 'yellow' || d === 'blue' || d === 'red';
   const output = {};
   const offset = (options.page -1) * 10
@@ -23,14 +25,12 @@ function retrieve(options = { page: 1, colors: [] }) {
     .then(response => response.json())
     .then(data => data.slice(offset, offset + 10))
     .then(data => {
+      output.previousPage = options.page > 1 ? options.page -1 : null;
+      output.nextPage = options.page < data.map(e => e.id).length ? options.page + 1 : null;
       output.ids = data.map(e => e.id)
       output.open = data.map(e => ({...e, isPrimary: primaryEvaluator(e.color)}))
         .filter(e => e.disposition === 'open')
-      output.closedPrimaryCount = data.filter(e => 
-        e.disposition === 'closed' &&
-        e.color === ('red' || 'blue' || 'yellow')).length
-      output.previousPage = options.page > 1 ? options.page -1 : null;
-      output.nextPage = options.page < output.ids.length ? options.page + 1 : null;
+      output.closedPrimaryCount = data.filter(e => e.disposition === 'closed' && primaryEvaluator(e.color)).length
     })
     .then(() => console.log(output))
   return output;
