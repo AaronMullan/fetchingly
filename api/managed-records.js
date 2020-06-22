@@ -1,4 +1,3 @@
-// import retrieve from './managed-records.js'
 import fetch from "../util/fetch-fill";
 import URI from "urijs";
 
@@ -14,18 +13,9 @@ async function retrieve({ page = 1, colors = [] } = {}) {
   url.addSearch("offset", (page - 1) * 10);
   url.addSearch("color[]", colors);
 
-  let response
-  
-  response = await fetch(url.toString())
-    .then(response => {
-  if (response.status >= 200 && response.status <= 299) {
-    return response;
-  } else {
-    throw Error(response.statusText)
-  }
-})
-
-  const data = await response.json()
+const response = await fetch(url.toString())
+      .catch(error => console.log(error))
+const data = await response.json()
   const output = {}
   output.previousPage = page > 1 ? page - 1 : null;
   output.nextPage = data[0] && page < 50 ? page + 1 : null;
